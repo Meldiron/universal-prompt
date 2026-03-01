@@ -87,8 +87,8 @@ export function RequestPlatformDialog({ variant = 'default' }: RequestPlatformDi
         </DialogHeader>
 
         {submitted ? (
-          <div className="flex flex-col items-center gap-2 py-6">
-            <Check className="h-8 w-8 text-emerald-500" />
+          <div className="flex flex-col items-center gap-2 py-6 animate-in fade-in zoom-in-75 duration-300">
+            <Check className="h-8 w-8 text-emerald-500 animate-scale-bounce" />
             <p className="text-sm font-medium text-foreground">
               Request submitted!
             </p>

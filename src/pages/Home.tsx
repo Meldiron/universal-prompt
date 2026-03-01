@@ -1,4 +1,5 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
+import { flushSync } from 'react-dom'
 import {
   Link,
   Loader2,
@@ -16,8 +17,11 @@ import { PlatformCard } from '@/components/PlatformCard'
 import { platforms } from '@/lib/ai-platforms'
 import { createShortLink } from '@/lib/appwrite'
 import { useFavorites } from '@/hooks/useFavorites'
+import { useInView } from '@/hooks/useInView'
 import { RequestPlatformDialog } from '@/components/RequestPlatformDialog'
 import { ShortLinkDialog } from '@/components/ShortLinkDialog'
+import { RollingNumber } from '@/components/RollingNumber'
+import { cn } from '@/lib/utils'
 
 export function Home() {
   const [prompt, setPrompt] = useState('')
@@ -68,15 +72,75 @@ export function Home() {
     },
   ]
 
+  // Scroll-entrance refs
+  const hero = useInView()
+  const chips = useInView()
+  const promptSection = useInView()
+  const platformGrid = useInView()
+  const useCasesHeading = useInView()
+  const useCasesRow1 = useInView()
+  const useCasesRow2 = useInView()
+  const faqHeading = useInView()
+  const faqItems = useInView()
+  const cta = useInView()
+
+  // Triggers a fade-in entrance every time the platform grid appears
+  // (on first scroll-in AND when hasPrompt flips to true).
+  // Auto-clears after the animation so view-transitions can take over for reordering.
+  const [gridRevealing, setGridRevealing] = useState(false)
+  const prevHasPrompt = useRef(false)
+
+  useEffect(() => {
+    // Trigger on first scroll-in while prompt is already typed
+    if (platformGrid.isInView && hasPrompt && !gridRevealing && !prevHasPrompt.current) {
+      setGridRevealing(true)
+    }
+    prevHasPrompt.current = hasPrompt
+  }, [platformGrid.isInView]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    // Trigger when user starts typing (hasPrompt flips true) while already in view
+    if (hasPrompt && platformGrid.isInView) {
+      setGridRevealing(true)
+    }
+  }, [hasPrompt]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!gridRevealing) return
+    const id = setTimeout(() => setGridRevealing(false), 800)
+    return () => clearTimeout(id)
+  }, [gridRevealing])
+
+  const handleToggleFavorite = useCallback(
+    (id: string) => {
+      if (document.startViewTransition) {
+        document.startViewTransition(() => {
+          flushSync(() => toggleFavorite(id))
+        })
+      } else {
+        toggleFavorite(id)
+      }
+    },
+    [toggleFavorite],
+  )
+
   return (
     <>
       {/* ── Hero ── */}
-      <div className="mx-auto max-w-4xl px-4 pt-16 pb-10 text-center">
+      <div
+        ref={hero.ref}
+        className="mx-auto max-w-4xl px-4 pt-16 pb-10 text-center"
+      >
         <a
           href="https://github.com/meldiron/universal-prompt"
           target="_blank"
           rel="noopener noreferrer"
-          className="mb-4 inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 no-underline transition-colors hover:border-muted-foreground/30 hover:bg-secondary"
+          className={cn(
+            'mb-4 inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 no-underline transition-colors hover:border-muted-foreground/30 hover:bg-secondary',
+            hero.isInView
+              ? 'animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both'
+              : 'opacity-0',
+          )}
         >
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
@@ -86,22 +150,44 @@ export function Home() {
             Free &amp; open source on GitHub
           </span>
         </a>
-        <h1 className="mb-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+        <h1
+          className={cn(
+            'mb-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl',
+            hero.isInView
+              ? 'animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both'
+              : 'opacity-0',
+          )}
+          style={{ animationDelay: '150ms' }}
+        >
           One prompt, every AI
         </h1>
-        <p className="mx-auto max-w-lg text-base text-muted-foreground">
+        <p
+          className={cn(
+            'mx-auto max-w-lg text-base text-muted-foreground',
+            hero.isInView
+              ? 'animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both'
+              : 'opacity-0',
+          )}
+          style={{ animationDelay: '300ms' }}
+        >
           Write your prompt once. Get instant deep links to open it in ChatGPT,
           Claude, Gemini, and {platforms.length - 3}+ other platforms.
         </p>
       </div>
 
       {/* ── Supported Platforms ── */}
-      <div className="mx-auto max-w-3xl px-4 pb-12">
+      <div ref={chips.ref} className="mx-auto max-w-3xl px-4 pb-12">
         <div className="flex flex-wrap items-center justify-center gap-3">
-          {platforms.map((p) => (
+          {platforms.map((p, i) => (
             <div
               key={p.id}
-              className="flex items-center gap-2 rounded-md border border-border px-3 py-1.5"
+              className={cn(
+                'flex items-center gap-2 rounded-md border border-border px-3 py-1.5',
+                chips.isInView
+                  ? 'animate-in fade-in zoom-in-95 duration-300 fill-mode-both'
+                  : 'opacity-0',
+              )}
+              style={{ animationDelay: `${i * 50}ms` }}
             >
               <img
                 src={p.icon}
@@ -113,14 +199,31 @@ export function Home() {
               </span>
             </div>
           ))}
-          <RequestPlatformDialog variant="chip" />
+          <div
+            className={cn(
+              chips.isInView
+                ? 'animate-in fade-in zoom-in-95 duration-300 fill-mode-both'
+                : 'opacity-0',
+            )}
+            style={{ animationDelay: `${platforms.length * 50}ms` }}
+          >
+            <RequestPlatformDialog variant="chip" />
+          </div>
         </div>
       </div>
 
       <GridLine />
 
       {/* ── Prompt Input ── */}
-      <div className="mx-auto max-w-4xl px-4 py-10 pb-4">
+      <div
+        ref={promptSection.ref}
+        className={cn(
+          'mx-auto max-w-4xl px-4 py-10 pb-4',
+          promptSection.isInView
+            ? 'animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both'
+            : 'opacity-0',
+        )}
+      >
         <div className="mb-4 text-center">
           <h2 className="mb-1 text-lg font-bold tracking-tight text-foreground">
             Your prompt
@@ -143,16 +246,16 @@ export function Home() {
             />
             <div className="flex flex-wrap items-center gap-3 border-t border-border px-3 py-2.5">
               <span className="font-mono text-[11px] text-primary">
-                ~{Math.ceil(prompt.trim().length / 4)} tokens
+                ~<RollingNumber value={Math.ceil(prompt.trim().length / 4)} /> tokens
               </span>
               <span className="font-mono text-[11px] text-muted-foreground/50">
-                {prompt.trim().length} chars
+                <RollingNumber value={prompt.trim().length} /> chars
               </span>
               <span className="font-mono text-[11px] text-muted-foreground/50">
-                {prompt.trim() ? prompt.trim().split(/\s+/).length : 0} words
+                <RollingNumber value={prompt.trim() ? prompt.trim().split(/\s+/).length : 0} /> words
               </span>
               <div className="flex-1" />
-         
+
                 <Button
                   variant="ghost"
                   size="sm"
@@ -172,7 +275,7 @@ export function Home() {
           </div>
 
           {error && (
-            <div className="mt-3 flex items-center gap-1.5 px-1 text-xs text-destructive">
+            <div className="animate-in fade-in slide-in-from-left-2 duration-200 mt-3 flex items-center gap-1.5 px-1 text-xs text-destructive">
               <AlertCircle className="h-3.5 w-3.5" />
               {error}
             </div>
@@ -188,38 +291,70 @@ export function Home() {
       </div>
 
       {/* ── Platform Grid / Empty State ── */}
-      <div className="mx-auto max-w-4xl px-4 pb-4 pt-0">
+      <div ref={platformGrid.ref} className="mx-auto max-w-4xl px-4 pb-4 pt-0">
         {hasPrompt ? (
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
+            <div
+              className={cn(
+                'flex items-center justify-between',
+                gridRevealing
+                  ? 'animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both'
+                  : '',
+              )}
+            >
               <h2 className="text-sm font-medium text-muted-foreground">
                 Open in {platforms.length} platforms
               </h2>
             </div>
             <div className="grid gap-2 sm:grid-cols-2">
-              {sortedPlatforms.map((platform) => (
-                <PlatformCard
+              {sortedPlatforms.map((platform, i) => (
+                <div
                   key={platform.id}
-                  platform={platform}
-                  prompt={prompt.trim()}
-                  isFavorite={isFavorite(platform.id)}
-                  onToggleFavorite={() => toggleFavorite(platform.id)}
-                />
+                  className={cn(
+                    'min-w-0',
+                    gridRevealing
+                      ? 'animate-in fade-in zoom-in-95 duration-300 fill-mode-both'
+                      : '',
+                  )}
+                  style={{
+                    viewTransitionName: gridRevealing ? undefined : `platform-${platform.id}`,
+                    ...(gridRevealing ? { animationDelay: `${i * 50}ms` } : {}),
+                  }}
+                >
+                  <PlatformCard
+                    platform={platform}
+                    prompt={prompt.trim()}
+                    isFavorite={isFavorite(platform.id)}
+                    onToggleFavorite={() => handleToggleFavorite(platform.id)}
+                  />
+                </div>
               ))}
             </div>
             <RequestPlatformDialog />
           </div>
         ) : (
-          <div>
+          <div
+            className={cn(
+              platformGrid.isInView
+                ? 'animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both'
+                : 'opacity-0',
+            )}
+          >
             <p className="mb-6 text-center text-sm text-muted-foreground">
               Or try one of our examples:
             </p>
             <div className="space-y-2">
-              {examples.map((example) => (
+              {examples.map((example, i) => (
                 <button
                   key={example.label}
                   onClick={() => setPrompt(example.prompt)}
-                  className="group flex w-full items-center gap-3 rounded-lg border border-border bg-card p-3 text-left transition-all hover:border-muted-foreground/25"
+                  className={cn(
+                    'group flex w-full items-center gap-3 rounded-lg border border-border bg-card p-3 text-left transition-all hover:border-muted-foreground/25',
+                    platformGrid.isInView
+                      ? 'animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both'
+                      : 'opacity-0',
+                  )}
+                  style={{ animationDelay: `${150 + i * 150}ms` }}
                 >
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-secondary">
                     <example.icon className="h-4 w-4 text-muted-foreground" />
@@ -243,7 +378,15 @@ export function Home() {
       <GridLine />
 
       {/* ── Use Cases heading ── */}
-      <div className="mx-auto max-w-4xl px-4 pt-20 pb-6 text-center">
+      <div
+        ref={useCasesHeading.ref}
+        className={cn(
+          'mx-auto max-w-4xl px-4 pt-20 pb-6 text-center',
+          useCasesHeading.isInView
+            ? 'animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both'
+            : 'opacity-0',
+        )}
+      >
         <h2 className="mb-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
           What will you build with it?
         </h2>
@@ -276,9 +419,18 @@ export function Home() {
           </div>
 
           {/* Row 1 */}
-          <div className="grid grid-cols-1 sm:grid-cols-2">
-            {useCases.slice(0, 2).map((uc) => (
-              <div key={uc.title} className="p-6">
+          <div ref={useCasesRow1.ref} className="grid grid-cols-1 sm:grid-cols-2">
+            {useCases.slice(0, 2).map((uc, i) => (
+              <div
+                key={uc.title}
+                className={cn(
+                  'p-6',
+                  useCasesRow1.isInView
+                    ? 'animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both'
+                    : 'opacity-0',
+                )}
+                style={{ animationDelay: `${i * 150}ms` }}
+              >
                 <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-md border border-border bg-secondary">
                   <uc.icon className="h-4 w-4 text-muted-foreground" />
                 </div>
@@ -303,9 +455,18 @@ export function Home() {
           </div>
 
           {/* Row 2 */}
-          <div className="grid grid-cols-1 sm:grid-cols-2">
-            {useCases.slice(2, 4).map((uc) => (
-              <div key={uc.title} className="p-6">
+          <div ref={useCasesRow2.ref} className="grid grid-cols-1 sm:grid-cols-2">
+            {useCases.slice(2, 4).map((uc, i) => (
+              <div
+                key={uc.title}
+                className={cn(
+                  'p-6',
+                  useCasesRow2.isInView
+                    ? 'animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both'
+                    : 'opacity-0',
+                )}
+                style={{ animationDelay: `${i * 150}ms` }}
+              >
                 <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-md border border-border bg-secondary">
                   <uc.icon className="h-4 w-4 text-muted-foreground" />
                 </div>
@@ -334,7 +495,15 @@ export function Home() {
       <GridLine />
 
       {/* ── FAQ ── */}
-      <div className="mx-auto max-w-4xl px-4 pt-20 pb-20 text-center">
+      <div
+        ref={faqHeading.ref}
+        className={cn(
+          'mx-auto max-w-4xl px-4 pt-20 pb-20 text-center',
+          faqHeading.isInView
+            ? 'animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both'
+            : 'opacity-0',
+        )}
+      >
         <h2 className="mb-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
           Frequently asked questions
         </h2>
@@ -343,15 +512,23 @@ export function Home() {
         </p>
       </div>
 
-      <section className="mx-auto max-w-4xl pb-4">
+      <section ref={faqItems.ref} className="mx-auto max-w-4xl pb-4">
         <div className="relative">
           {/* Left rail */}
           <div aria-hidden className="absolute inset-y-0 left-0 hidden w-px bg-border/50 lg:block" />
           {/* Right rail */}
           <div aria-hidden className="absolute inset-y-0 right-0 hidden w-px bg-border/50 lg:block" />
 
-          {faqs.map((faq) => (
-            <div key={faq.question}>
+          {faqs.map((faq, i) => (
+            <div
+              key={faq.question}
+              className={cn(
+                faqItems.isInView
+                  ? 'animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both'
+                  : 'opacity-0',
+              )}
+              style={{ animationDelay: `${i * 100}ms` }}
+            >
               {/* Full-bleed horizontal line with pluses */}
               <div aria-hidden className="relative hidden lg:block" style={{ marginLeft: 'calc(-50vw + 50%)', marginRight: 'calc(-50vw + 50%)', width: '100vw' }}>
                 <div className="h-px w-full bg-border/50" />
@@ -383,7 +560,15 @@ export function Home() {
       </section>
 
       {/* ── CTA ── */}
-      <section className="mx-auto max-w-4xl px-4 py-20 text-center">
+      <section
+        ref={cta.ref}
+        className={cn(
+          'mx-auto max-w-4xl px-4 py-20 text-center',
+          cta.isInView
+            ? 'animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both'
+            : 'opacity-0',
+        )}
+      >
         <h2 className="mb-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
           Ready to try it?
         </h2>

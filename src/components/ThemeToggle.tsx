@@ -13,21 +13,29 @@ export function ThemeToggle() {
 
   return (
     <div className="flex items-center rounded-md border border-border p-0.5">
-      {options.map((opt) => (
-        <button
-          key={opt.value}
-          onClick={() => setTheme(opt.value)}
-          title={opt.label}
-          className={cn(
-            'flex h-7 w-7 items-center justify-center rounded-sm transition-colors',
-            theme === opt.value
-              ? 'bg-secondary text-foreground'
-              : 'text-muted-foreground hover:text-foreground',
-          )}
-        >
-          <opt.icon className="h-3.5 w-3.5" />
-        </button>
-      ))}
+      {options.map((opt) => {
+        const isActive = theme === opt.value
+        return (
+          <button
+            key={opt.value}
+            onClick={() => setTheme(opt.value)}
+            title={opt.label}
+            className={cn(
+              'flex h-7 w-7 items-center justify-center rounded-sm transition-all duration-200',
+              isActive
+                ? 'bg-secondary text-foreground scale-110'
+                : 'text-muted-foreground hover:text-foreground scale-100',
+            )}
+          >
+            <opt.icon
+              className={cn(
+                'h-3.5 w-3.5 transition-transform duration-200',
+                isActive ? 'rotate-0' : '-rotate-12',
+              )}
+            />
+          </button>
+        )
+      })}
     </div>
   )
 }
