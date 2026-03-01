@@ -25,6 +25,13 @@ export default defineConfig([
     },
   },
   {
+    files: ['src/components/RollingNumber.tsx'],
+    rules: {
+      // setState in effect is intentional for animation sequencing
+      'react-hooks/set-state-in-effect': 'off',
+    },
+  },
+  {
     files: ['src/components/ui/**/*.{ts,tsx}'],
     rules: {
       // shadcn/ui components export variants alongside components

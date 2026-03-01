@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface RollingNumberProps {
   value: number
@@ -13,26 +13,32 @@ const prefersReducedMotion =
  * old value slides out to bottom.
  */
 export function RollingNumber({ value, className }: RollingNumberProps) {
+  const [display, setDisplay] = useState(value)
+  const [prev, setPrev] = useState(value)
   const [animating, setAnimating] = useState(false)
-  const prevRef = useRef(value)
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null)
 
-  const prev = prevRef.current
-
-  // After each render with a new value, schedule the ref update
-  // so `prev` holds the old value during the animation frame.
-  useMemo(() => {
-    if (value !== prevRef.current) {
-      prevRef.current = value
-    }
-  }, [value])
-
   useEffect(() => {
-    if (prefersReducedMotion || value === prev) return
+    if (value === display || prefersReducedMotion) {
+      // Snap without animating
+      if (value !== display) {
+        setDisplay(value)
+        setPrev(value)
+      }
+      return
+    }
 
-    // If already animating, don't stack — just let it snap
-    if (animating) return
+    // If already animating, snap and skip
+    if (animating) {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+      setAnimating(false)
+      setDisplay(value)
+      setPrev(value)
+      return
+    }
 
+    setPrev(display)
+    setDisplay(value)
     setAnimating(true)
 
     if (timeoutRef.current) clearTimeout(timeoutRef.current)
@@ -41,7 +47,8 @@ export function RollingNumber({ value, className }: RollingNumberProps) {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current)
     }
-  }, [value]) // eslint-disable-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value])
 
   return (
     <span
@@ -63,7 +70,7 @@ export function RollingNumber({ value, className }: RollingNumberProps) {
         }}
       >
         <span aria-hidden={!animating} style={{ height: '1.1em' }}>
-          {value}
+          {display}
         </span>
         <span aria-hidden style={{ height: '1.1em' }}>
           {prev}

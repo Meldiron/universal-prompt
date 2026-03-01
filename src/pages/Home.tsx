@@ -181,10 +181,10 @@ export function Home() {
               className={cn(
                 'flex items-center gap-2 rounded-md border border-border px-3 py-1.5',
                 chips.isInView
-                  ? 'animate-in fade-in zoom-in-95 duration-300 fill-mode-both'
+                  ? 'animate-in fade-in zoom-in-95 duration-500 fill-mode-both'
                   : 'opacity-0',
               )}
-              style={{ animationDelay: `${i * 50}ms` }}
+              style={{ animationDelay: `${i * 75}ms` }}
             >
               <img src={p.icon} alt="" className="icon-adaptive h-3.5 w-3.5" />
               <span className="font-mono text-xs text-muted-foreground">{p.name}</span>
@@ -193,10 +193,10 @@ export function Home() {
           <div
             className={cn(
               chips.isInView
-                ? 'animate-in fade-in zoom-in-95 duration-300 fill-mode-both'
+                ? 'animate-in fade-in zoom-in-95 duration-500 fill-mode-both'
                 : 'opacity-0',
             )}
-            style={{ animationDelay: `${platforms.length * 50}ms` }}
+            style={{ animationDelay: `${platforms.length * 75}ms` }}
           >
             <RequestPlatformDialog variant="chip" />
           </div>
