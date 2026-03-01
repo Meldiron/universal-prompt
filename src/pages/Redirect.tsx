@@ -4,6 +4,7 @@ import { Loader2, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { platforms } from '@/lib/ai-platforms'
 import { getPromptByShortId } from '@/lib/appwrite'
+import { RequestPlatformDialog } from '@/components/RequestPlatformDialog'
 
 export function Redirect() {
   const { shortId } = useParams<{ shortId: string }>()
@@ -97,6 +98,9 @@ export function Redirect() {
             </a>
           )
         })}
+      </div>
+      <div className="mt-2">
+        <RequestPlatformDialog />
       </div>
 
       <div className="mt-8 text-center">

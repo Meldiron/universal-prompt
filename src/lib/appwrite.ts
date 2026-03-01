@@ -1,57 +1,45 @@
-import { Client, Databases, ID, Query } from 'appwrite'
+import { Client, TablesDB, ID } from 'appwrite'
 
 const client = new Client()
-  .setEndpoint(import.meta.env.VITE_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1')
-  .setProject(import.meta.env.VITE_APPWRITE_PROJECT_ID || '')
+  .setEndpoint('https://cloud.appwrite.io/v1')
+  .setProject('69a4478f0011f314fc7d')
 
-const databases = new Databases(client)
+const tables = new TablesDB(client)
 
-const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID || ''
-const COLLECTION_ID = import.meta.env.VITE_APPWRITE_COLLECTION_ID || ''
-
-function generateShortId(length = 8): string {
-  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-  let result = ''
-  const array = new Uint8Array(length)
-  crypto.getRandomValues(array)
-  for (let i = 0; i < length; i++) {
-    result += chars[array[i] % chars.length]
-  }
-  return result
-}
+const DATABASE_ID = 'main';
+const TABLE_ID_SHORTLINKS = 'short-links'
+const TABLE_ID_REQUESTS = 'platform-requests'
 
 export async function createShortLink(prompt: string): Promise<string> {
-  const shortId = generateShortId()
+  const shortId = ID.unique()
 
-  await databases.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), {
-    shortId,
+  await tables.createRow(DATABASE_ID, TABLE_ID_SHORTLINKS, shortId, {
     prompt,
-    createdAt: new Date().toISOString(),
   })
 
   return shortId
 }
 
+export async function createCustomShortLink(prompt: string, slug: string): Promise<void> {
+  await tables.createRow(DATABASE_ID, TABLE_ID_SHORTLINKS, slug, {
+    prompt,
+  })
+}
+
+export async function submitPlatformRequest(name: string, url: string): Promise<void> {
+  await tables.createRow(DATABASE_ID, TABLE_ID_REQUESTS, ID.unique(), {
+    name,
+    url,
+  })
+}
+
 export async function getPromptByShortId(shortId: string): Promise<string | null> {
   try {
-    const response = await databases.listDocuments(DATABASE_ID, COLLECTION_ID, [
-      Query.equal('shortId', shortId),
-      Query.limit(1),
-    ])
-
-    if (response.documents.length > 0) {
-      return response.documents[0].prompt as string
-    }
+    const response = await tables.getRow(DATABASE_ID, TABLE_ID_SHORTLINKS, shortId);
+    
+    return response.prompt as string;
     return null
   } catch {
     return null
   }
-}
-
-export function isAppwriteConfigured(): boolean {
-  return !!(
-    import.meta.env.VITE_APPWRITE_PROJECT_ID &&
-    import.meta.env.VITE_APPWRITE_DATABASE_ID &&
-    import.meta.env.VITE_APPWRITE_COLLECTION_ID
-  )
 }

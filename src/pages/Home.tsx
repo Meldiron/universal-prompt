@@ -1,8 +1,6 @@
 import { useState, useCallback, useMemo } from 'react'
 import {
   Link,
-  Check,
-  Copy,
   Loader2,
   AlertCircle,
   ArrowRight,
@@ -16,14 +14,15 @@ import { Button } from '@/components/ui/button'
 import { GridLine } from '@/components/BlueprintGrid'
 import { PlatformCard } from '@/components/PlatformCard'
 import { platforms } from '@/lib/ai-platforms'
-import { createShortLink, isAppwriteConfigured } from '@/lib/appwrite'
+import { createShortLink } from '@/lib/appwrite'
 import { useFavorites } from '@/hooks/useFavorites'
+import { RequestPlatformDialog } from '@/components/RequestPlatformDialog'
+import { ShortLinkDialog } from '@/components/ShortLinkDialog'
 
 export function Home() {
   const [prompt, setPrompt] = useState('')
   const [shortId, setShortId] = useState<string | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
-  const [shortLinkCopied, setShortLinkCopied] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const { favorites, toggle: toggleFavorite, isFavorite } = useFavorites()
@@ -38,12 +37,10 @@ export function Home() {
     [favorites],
   )
 
-  const appwriteReady = isAppwriteConfigured()
-
   const shortUrl = shortId ? `${window.location.origin}/s/${shortId}` : null
 
   const handleGenerateShortLink = useCallback(async () => {
-    if (!prompt.trim() || !appwriteReady) return
+    if (!prompt.trim()) return
     setIsGenerating(true)
     setError(null)
     try {
@@ -54,14 +51,7 @@ export function Home() {
     } finally {
       setIsGenerating(false)
     }
-  }, [prompt, appwriteReady])
-
-  const handleCopyShortLink = async () => {
-    if (!shortUrl) return
-    await navigator.clipboard.writeText(shortUrl)
-    setShortLinkCopied(true)
-    setTimeout(() => setShortLinkCopied(false), 2000)
-  }
+  }, [prompt])
 
   const hasPrompt = prompt.trim().length > 0
 
@@ -106,7 +96,7 @@ export function Home() {
       </div>
 
       {/* ── Supported Platforms ── */}
-      <div className="mx-auto max-w-4xl px-4 pb-6">
+      <div className="mx-auto max-w-3xl px-4 pb-12">
         <div className="flex flex-wrap items-center justify-center gap-3">
           {platforms.map((p) => (
             <div
@@ -123,6 +113,7 @@ export function Home() {
               </span>
             </div>
           ))}
+          <RequestPlatformDialog variant="chip" />
         </div>
       </div>
 
@@ -151,6 +142,9 @@ export function Home() {
               className="min-h-[160px] resize-y border-0 bg-transparent font-mono text-sm shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/40"
             />
             <div className="flex flex-wrap items-center gap-3 border-t border-border px-3 py-2.5">
+              <span className="font-mono text-[11px] text-primary">
+                ~{Math.ceil(prompt.trim().length / 4)} tokens
+              </span>
               <span className="font-mono text-[11px] text-muted-foreground/50">
                 {prompt.trim().length} chars
               </span>
@@ -158,10 +152,7 @@ export function Home() {
                 {prompt.trim() ? prompt.trim().split(/\s+/).length : 0} words
               </span>
               <div className="flex-1" />
-              <span className="font-mono text-[11px] text-primary">
-                ~{Math.ceil(prompt.trim().length / 4)} tokens
-              </span>
-              {appwriteReady && (
+         
                 <Button
                   variant="ghost"
                   size="sm"
@@ -176,37 +167,23 @@ export function Home() {
                   )}
                   Short Link
                 </Button>
-              )}
+
             </div>
           </div>
 
-          <div className="mt-3 flex flex-wrap items-center gap-3 px-1">
-            {shortUrl && (
-              <div className="flex items-center gap-2">
-                <code className="rounded border border-border bg-secondary px-2.5 py-1 font-mono text-xs text-foreground">
-                  {shortUrl}
-                </code>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7"
-                  onClick={handleCopyShortLink}
-                >
-                  {shortLinkCopied ? (
-                    <Check className="h-3.5 w-3.5 text-emerald-500" />
-                  ) : (
-                    <Copy className="h-3.5 w-3.5" />
-                  )}
-                </Button>
-              </div>
-            )}
-            {error && (
-              <div className="flex items-center gap-1.5 text-xs text-destructive">
-                <AlertCircle className="h-3.5 w-3.5" />
-                {error}
-              </div>
-            )}
-          </div>
+          {error && (
+            <div className="mt-3 flex items-center gap-1.5 px-1 text-xs text-destructive">
+              <AlertCircle className="h-3.5 w-3.5" />
+              {error}
+            </div>
+          )}
+
+          <ShortLinkDialog
+            url={shortUrl}
+            prompt={prompt.trim()}
+            onClose={() => setShortId(null)}
+            onUrlChange={(newId) => setShortId(newId)}
+          />
         </div>
       </div>
 
@@ -230,6 +207,7 @@ export function Home() {
                 />
               ))}
             </div>
+            <RequestPlatformDialog />
           </div>
         ) : (
           <div>
@@ -265,7 +243,7 @@ export function Home() {
       <GridLine />
 
       {/* ── Use Cases heading ── */}
-      <div className="mx-auto max-w-4xl px-4 pt-14 pb-6 text-center">
+      <div className="mx-auto max-w-4xl px-4 pt-20 pb-6 text-center">
         <h2 className="mb-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
           What will you build with it?
         </h2>
@@ -275,72 +253,181 @@ export function Home() {
       </div>
 
       {/* ── Use Cases grid ── */}
-      <section className="mx-auto max-w-4xl py-10 pb-0">
-        <div className="relative grid grid-cols-1 sm:grid-cols-2">
+      <section className="mx-auto max-w-4xl py-20 pb-0">
+        <div className="relative">
           {/* Vertical divider (center) */}
           <div
             aria-hidden
             className="absolute inset-y-0 left-1/2 hidden w-px -translate-x-1/2 bg-border/50 sm:block"
           />
-          {/* Horizontal divider (center) */}
-          <div
-            aria-hidden
-            className="absolute inset-x-0 top-1/2 hidden h-px -translate-y-1/2 bg-border/50 sm:block"
-          />
-          {/* Center "+" */}
-          <span
-            aria-hidden
-            className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50 sm:block"
-          >
-            +
-          </span>
-          {/* Top center "+" */}
-          <span
-            aria-hidden
-            className="absolute left-1/2 top-0 hidden -translate-x-1/2 -translate-y-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50 sm:block"
-          >
-            +
-          </span>
-          {/* Bottom center "+" */}
-          <span
-            aria-hidden
-            className="absolute left-1/2 bottom-0 hidden -translate-x-1/2 translate-y-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50 sm:block"
-          >
-            +
-          </span>
-          {/* Left center "+" */}
-          <span
-            aria-hidden
-            className="absolute left-0 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50 sm:block"
-          >
-            +
-          </span>
-          {/* Right center "+" */}
-          <span
-            aria-hidden
-            className="absolute right-0 top-1/2 hidden translate-x-1/2 -translate-y-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50 sm:block"
-          >
-            +
-          </span>
+          {/* Left rail */}
+          <div aria-hidden className="absolute inset-y-0 left-0 hidden w-px bg-border/50 lg:block" />
+          {/* Right rail */}
+          <div aria-hidden className="absolute inset-y-0 right-0 hidden w-px bg-border/50 lg:block" />
 
-          {useCases.map((uc) => (
-            <div key={uc.title} className="p-6">
-              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-md border border-border bg-secondary">
-                <uc.icon className="h-4 w-4 text-muted-foreground" />
+          {/* Top full-bleed line */}
+          <div aria-hidden className="relative hidden lg:block" style={{ marginLeft: 'calc(-50vw + 50%)', marginRight: 'calc(-50vw + 50%)', width: '100vw' }}>
+            <div className="h-px w-full bg-border/50" />
+            <div className="pointer-events-none relative mx-auto max-w-4xl">
+              <span className="absolute -top-[7px] left-0 -translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
+              <span className="absolute -top-[7px] left-1/2 -translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
+              <span className="absolute -top-[7px] right-0 translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
+            </div>
+          </div>
+
+          {/* Row 1 */}
+          <div className="grid grid-cols-1 sm:grid-cols-2">
+            {useCases.slice(0, 2).map((uc) => (
+              <div key={uc.title} className="p-6">
+                <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-md border border-border bg-secondary">
+                  <uc.icon className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <h3 className="mb-1 text-sm font-semibold text-foreground">
+                  {uc.title}
+                </h3>
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  {uc.description}
+                </p>
               </div>
-              <h3 className="mb-1 text-sm font-semibold text-foreground">
-                {uc.title}
-              </h3>
-              <p className="text-xs leading-relaxed text-muted-foreground">
-                {uc.description}
-              </p>
+            ))}
+          </div>
+
+          {/* Middle full-bleed line */}
+          <div aria-hidden className="relative hidden lg:block" style={{ marginLeft: 'calc(-50vw + 50%)', marginRight: 'calc(-50vw + 50%)', width: '100vw' }}>
+            <div className="h-px w-full bg-border/50" />
+            <div className="pointer-events-none relative mx-auto max-w-4xl">
+              <span className="absolute -top-[7px] left-0 -translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
+              <span className="absolute -top-[7px] left-1/2 -translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
+              <span className="absolute -top-[7px] right-0 translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
+            </div>
+          </div>
+
+          {/* Row 2 */}
+          <div className="grid grid-cols-1 sm:grid-cols-2">
+            {useCases.slice(2, 4).map((uc) => (
+              <div key={uc.title} className="p-6">
+                <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-md border border-border bg-secondary">
+                  <uc.icon className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <h3 className="mb-1 text-sm font-semibold text-foreground">
+                  {uc.title}
+                </h3>
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  {uc.description}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Bottom full-bleed line */}
+          <div aria-hidden className="relative hidden lg:block" style={{ marginLeft: 'calc(-50vw + 50%)', marginRight: 'calc(-50vw + 50%)', width: '100vw' }}>
+            <div className="h-px w-full bg-border/50" />
+            <div className="pointer-events-none relative mx-auto max-w-4xl">
+              <span className="absolute -top-[7px] left-0 -translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
+              <span className="absolute -top-[7px] left-1/2 -translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
+              <span className="absolute -top-[7px] right-0 translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <GridLine />
+
+      {/* ── FAQ ── */}
+      <div className="mx-auto max-w-4xl px-4 pt-20 pb-20 text-center">
+        <h2 className="mb-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+          Frequently asked questions
+        </h2>
+        <p className="mx-auto max-w-md text-sm text-muted-foreground">
+          Everything you need to know about Universal Prompt.
+        </p>
+      </div>
+
+      <section className="mx-auto max-w-4xl pb-4">
+        <div className="relative">
+          {/* Left rail */}
+          <div aria-hidden className="absolute inset-y-0 left-0 hidden w-px bg-border/50 lg:block" />
+          {/* Right rail */}
+          <div aria-hidden className="absolute inset-y-0 right-0 hidden w-px bg-border/50 lg:block" />
+
+          {faqs.map((faq) => (
+            <div key={faq.question}>
+              {/* Full-bleed horizontal line with pluses */}
+              <div aria-hidden className="relative hidden lg:block" style={{ marginLeft: 'calc(-50vw + 50%)', marginRight: 'calc(-50vw + 50%)', width: '100vw' }}>
+                <div className="h-px w-full bg-border/50" />
+                <div className="pointer-events-none relative mx-auto max-w-4xl">
+                  <span className="absolute -top-[7px] left-0 -translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
+                  <span className="absolute -top-[7px] right-0 translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
+                </div>
+              </div>
+              <div className="px-6 py-5">
+                <h3 className="mb-1.5 text-sm font-medium text-foreground">
+                  {faq.question}
+                </h3>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {faq.answer}
+                </p>
+              </div>
             </div>
           ))}
+
+          {/* Bottom full-bleed line */}
+          <div aria-hidden className="relative hidden lg:block" style={{ marginLeft: 'calc(-50vw + 50%)', marginRight: 'calc(-50vw + 50%)', width: '100vw' }}>
+            <div className="h-px w-full bg-border/50" />
+            <div className="pointer-events-none relative mx-auto max-w-4xl">
+              <span className="absolute -top-[7px] left-0 -translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
+              <span className="absolute -top-[7px] right-0 translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
+            </div>
+          </div>
         </div>
+      </section>
+
+      {/* ── CTA ── */}
+      <section className="mx-auto max-w-4xl px-4 py-20 text-center">
+        <h2 className="mb-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+          Ready to try it?
+        </h2>
+        <p className="mx-auto mb-6 max-w-md text-sm text-muted-foreground">
+          Write your prompt once and share it everywhere. No sign-up required.
+        </p>
+        <Button
+          size="lg"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        >
+          Get started
+        </Button>
       </section>
     </>
   )
 }
+
+const faqs = [
+  {
+    question: 'Is Universal Prompt free?',
+    answer:
+      'Yes, completely free and open source. You can self-host it or use our hosted version at no cost.',
+  },
+  {
+    question: 'How do deep links work?',
+    answer:
+      'Each AI platform supports a URL format that pre-fills the chat input. We encode your prompt into the correct format for each platform so it opens ready to go.',
+  },
+  {
+    question: 'Do you store my prompts?',
+    answer:
+      'Only if you generate a short link. Short links are stored in an Appwrite database so they can be resolved later. If you just copy a direct platform link, nothing is stored.',
+  },
+  {
+    question: 'Can I add a platform that isn\'t listed?',
+    answer:
+      'Yes! Use the "Request a platform" button that appears below the platform list. We review requests and add new platforms regularly.',
+  },
+  {
+    question: 'What are short links for?',
+    answer:
+      'Short links let you share a single URL that opens a picker page. The recipient chooses their preferred AI platform, and the prompt opens there automatically.',
+  },
+]
 
 const useCases = [
   {
