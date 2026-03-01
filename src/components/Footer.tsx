@@ -1,11 +1,12 @@
+import { GridLine } from '@/components/BlueprintGrid'
+
 export function Footer() {
   return (
-    <footer className="border-t border-border py-6">
-      <div className="mx-auto max-w-4xl px-4">
+    <footer>
+      <GridLine />
+      <div className="mx-auto max-w-4xl px-4 py-6">
         <p className="text-center text-xs text-muted-foreground">
-          Prompt links are generated client-side. We never store or read your prompts
-          <span className="mx-2 text-border">|</span>
-          Short links are stored in Appwrite
+          &copy; {new Date().getFullYear()} Meldiron. All rights reserved.
         </p>
       </div>
     </footer>

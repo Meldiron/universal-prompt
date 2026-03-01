@@ -87,8 +87,7 @@ export function Redirect() {
                 <img
                   src={platform.icon}
                   alt={platform.name}
-                  className="h-5 w-5"
-                  style={{ filter: 'brightness(0) invert(1)' }}
+                  className="icon-adaptive h-5 w-5"
                 />
               </div>
               <div>

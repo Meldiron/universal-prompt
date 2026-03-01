@@ -1,31 +1,23 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import {
   Link,
   Check,
   Copy,
   Loader2,
   AlertCircle,
+  ArrowRight,
   User,
   BookOpen,
   MessageSquare,
-  GraduationCap,
-  Megaphone,
   Bug,
-  FileCode,
-  Briefcase,
 } from 'lucide-react'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
+import { GridLine } from '@/components/BlueprintGrid'
 import { PlatformCard } from '@/components/PlatformCard'
 import { platforms } from '@/lib/ai-platforms'
 import { createShortLink, isAppwriteConfigured } from '@/lib/appwrite'
+import { useFavorites } from '@/hooks/useFavorites'
 
 export function Home() {
   const [prompt, setPrompt] = useState('')
@@ -33,6 +25,18 @@ export function Home() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [shortLinkCopied, setShortLinkCopied] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const { favorites, toggle: toggleFavorite, isFavorite } = useFavorites()
+
+  const sortedPlatforms = useMemo(
+    () =>
+      [...platforms].sort((a, b) => {
+        const aFav = favorites.includes(a.id) ? 0 : 1
+        const bFav = favorites.includes(b.id) ? 0 : 1
+        return aFav - bFav
+      }),
+    [favorites],
+  )
 
   const appwriteReady = isAppwriteConfigured()
 
@@ -62,64 +66,36 @@ export function Home() {
   const hasPrompt = prompt.trim().length > 0
 
   const examples = [
-    'Explain the difference between REST and GraphQL with code examples',
-    'Write a bash script that monitors disk usage and sends alerts',
-    'Review this architecture: microservices vs monolith for a startup MVP',
+    {
+      icon: User,
+      label: 'Ask questions about a portfolio',
+      prompt: 'Read https://matejbaco.eu/llms-full.txt so I can ask questions about it.',
+    },
+    {
+      icon: BookOpen,
+      label: 'Research product documentation',
+      prompt: 'Research and explain teams API: https://appwrite.io/docs/products/auth.md',
+    },
   ]
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12">
-      {/* Hero */}
-      <div className="mb-10 text-center">
-        <Dialog>
-          <DialogTrigger asChild>
-            <button className="mb-4 inline-flex cursor-pointer items-center gap-2 rounded-full border border-border px-3 py-1 transition-colors hover:border-muted-foreground/30 hover:bg-secondary">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-              </span>
-              <span className="font-mono text-xs text-muted-foreground">
-                {platforms.length} platforms supported
-              </span>
-            </button>
-          </DialogTrigger>
-          <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-lg">
-            <DialogHeader>
-              <DialogTitle>Supported platforms</DialogTitle>
-            </DialogHeader>
-            <div className="mt-2 space-y-1">
-              {platforms.map((p) => (
-                <div
-                  key={p.id}
-                  className="flex items-center gap-3 rounded-md px-3 py-2.5"
-                >
-                  <div
-                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border"
-                    style={{ backgroundColor: `${p.color}10` }}
-                  >
-                    <img
-                      src={p.icon}
-                      alt=""
-                      className="h-4 w-4"
-                      style={{ filter: 'brightness(0) invert(1)' }}
-                    />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-foreground">{p.name}</p>
-                    <p className="font-mono text-xs text-muted-foreground">
-                      {p.description}
-                    </p>
-                  </div>
-                  {p.type !== 'web' && (
-                    <span className="rounded bg-secondary px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
-                      {p.type === 'desktop' ? 'APP' : 'SEARCH'}
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </DialogContent>
-        </Dialog>
+    <>
+      {/* ── Hero ── */}
+      <div className="mx-auto max-w-4xl px-4 pt-16 pb-10 text-center">
+        <a
+          href="https://github.com/meldiron/universal-prompt"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mb-4 inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 no-underline transition-colors hover:border-muted-foreground/30 hover:bg-secondary"
+        >
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+          </span>
+          <span className="font-mono text-xs text-muted-foreground">
+            Free &amp; open source on GitHub
+          </span>
+        </a>
         <h1 className="mb-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
           One prompt, every AI
         </h1>
@@ -129,159 +105,226 @@ export function Home() {
         </p>
       </div>
 
-      {/* Prompt Input */}
-      <div className="mb-8">
-        <Textarea
-          placeholder="Enter your prompt here..."
-          value={prompt}
-          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-            setPrompt(e.target.value)
-            setShortId(null)
-            setError(null)
-          }}
-          className="min-h-[140px] resize-y bg-card font-mono text-sm placeholder:text-muted-foreground/50"
-        />
-
-        {/* Short Link Section */}
-        <div className="mt-3 flex flex-wrap items-center gap-3">
-          {appwriteReady && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleGenerateShortLink}
-              disabled={!hasPrompt || isGenerating}
-              className="gap-2"
+      {/* ── Supported Platforms ── */}
+      <div className="mx-auto max-w-4xl px-4 pb-6">
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          {platforms.map((p) => (
+            <div
+              key={p.id}
+              className="flex items-center gap-2 rounded-md border border-border px-3 py-1.5"
             >
-              {isGenerating ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <Link className="h-3.5 w-3.5" />
-              )}
-              Generate Short Link
-            </Button>
-          )}
-
-          {shortUrl && (
-            <div className="flex items-center gap-2">
-              <code className="rounded border border-border bg-secondary px-2.5 py-1 font-mono text-xs text-foreground">
-                {shortUrl}
-              </code>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7"
-                onClick={handleCopyShortLink}
-              >
-                {shortLinkCopied ? (
-                  <Check className="h-3.5 w-3.5 text-emerald-500" />
-                ) : (
-                  <Copy className="h-3.5 w-3.5" />
-                )}
-              </Button>
+              <img
+                src={p.icon}
+                alt=""
+                className="icon-adaptive h-3.5 w-3.5"
+              />
+              <span className="font-mono text-xs text-muted-foreground">
+                {p.name}
+              </span>
             </div>
-          )}
-
-          {error && (
-            <div className="flex items-center gap-1.5 text-xs text-destructive">
-              <AlertCircle className="h-3.5 w-3.5" />
-              {error}
-            </div>
-          )}
-
-          {!appwriteReady && (
-            <p className="text-xs text-muted-foreground">
-              Short links disabled &mdash; configure Appwrite env vars to enable.
-            </p>
-          )}
+          ))}
         </div>
       </div>
 
-      {/* Platform Grid */}
-      {hasPrompt ? (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-medium text-muted-foreground">
-              Open in {platforms.length} platforms
-            </h2>
-            <span className="font-mono text-xs text-muted-foreground/60">
-              {prompt.trim().length} chars
-            </span>
+      <GridLine />
+
+      {/* ── Prompt Input ── */}
+      <div className="mx-auto max-w-4xl px-4 py-10 pb-4">
+        <div className="mb-4 text-center">
+          <h2 className="mb-1 text-lg font-bold tracking-tight text-foreground">
+            Your prompt
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Write or paste the prompt you want to share across AI platforms.
+          </p>
+        </div>
+        <div className="relative">
+          <div className="rounded-xl border border-border bg-card p-1 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
+            <Textarea
+              placeholder="Enter your prompt here..."
+              value={prompt}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                setPrompt(e.target.value)
+                setShortId(null)
+                setError(null)
+              }}
+              className="min-h-[160px] resize-y border-0 bg-transparent font-mono text-sm shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/40"
+            />
+            <div className="flex flex-wrap items-center gap-3 border-t border-border px-3 py-2.5">
+              <span className="font-mono text-[11px] text-muted-foreground/50">
+                {prompt.trim().length} chars
+              </span>
+              <span className="font-mono text-[11px] text-muted-foreground/50">
+                {prompt.trim() ? prompt.trim().split(/\s+/).length : 0} words
+              </span>
+              <div className="flex-1" />
+              <span className="font-mono text-[11px] text-primary">
+                ~{Math.ceil(prompt.trim().length / 4)} tokens
+              </span>
+              {appwriteReady && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleGenerateShortLink}
+                  disabled={!hasPrompt || isGenerating}
+                  className="h-7 gap-1.5 text-xs"
+                >
+                  {isGenerating ? (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <Link className="h-3 w-3" />
+                  )}
+                  Short Link
+                </Button>
+              )}
+            </div>
           </div>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {platforms.map((platform) => (
-              <PlatformCard
-                key={platform.id}
-                platform={platform}
-                prompt={prompt.trim()}
-              />
-            ))}
+
+          <div className="mt-3 flex flex-wrap items-center gap-3 px-1">
+            {shortUrl && (
+              <div className="flex items-center gap-2">
+                <code className="rounded border border-border bg-secondary px-2.5 py-1 font-mono text-xs text-foreground">
+                  {shortUrl}
+                </code>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7"
+                  onClick={handleCopyShortLink}
+                >
+                  {shortLinkCopied ? (
+                    <Check className="h-3.5 w-3.5 text-emerald-500" />
+                  ) : (
+                    <Copy className="h-3.5 w-3.5" />
+                  )}
+                </Button>
+              </div>
+            )}
+            {error && (
+              <div className="flex items-center gap-1.5 text-xs text-destructive">
+                <AlertCircle className="h-3.5 w-3.5" />
+                {error}
+              </div>
+            )}
           </div>
         </div>
-      ) : (
-        <div className="space-y-6">
-          {/* Example Prompts */}
-          <div className="rounded-lg border border-dashed border-border p-6">
-            <h3 className="mb-4 text-center text-sm font-medium text-muted-foreground">
-              Try an example prompt
-            </h3>
-            <div className="mx-auto max-w-xl space-y-2">
+      </div>
+
+      {/* ── Platform Grid / Empty State ── */}
+      <div className="mx-auto max-w-4xl px-4 pb-4 pt-0">
+        {hasPrompt ? (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-medium text-muted-foreground">
+                Open in {platforms.length} platforms
+              </h2>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {sortedPlatforms.map((platform) => (
+                <PlatformCard
+                  key={platform.id}
+                  platform={platform}
+                  prompt={prompt.trim()}
+                  isFavorite={isFavorite(platform.id)}
+                  onToggleFavorite={() => toggleFavorite(platform.id)}
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div>
+            <p className="mb-6 text-center text-sm text-muted-foreground">
+              Or try one of our examples:
+            </p>
+            <div className="space-y-2">
               {examples.map((example) => (
                 <button
-                  key={example}
-                  onClick={() => setPrompt(example)}
-                  className="w-full rounded-md border border-border bg-card px-4 py-2.5 text-left font-mono text-xs text-muted-foreground transition-colors hover:border-muted-foreground/30 hover:text-foreground"
+                  key={example.label}
+                  onClick={() => setPrompt(example.prompt)}
+                  className="group flex w-full items-center gap-3 rounded-lg border border-border bg-card p-3 text-left transition-all hover:border-muted-foreground/25"
                 >
-                  {example}
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-secondary">
+                    <example.icon className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-foreground">
+                      {example.label}
+                    </p>
+                    <p className="truncate font-mono text-xs text-muted-foreground/60">
+                      {example.prompt}
+                    </p>
+                  </div>
+                  <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground/40 transition-transform group-hover:translate-x-0.5 group-hover:text-muted-foreground" />
                 </button>
               ))}
             </div>
           </div>
+        )}
+      </div>
 
-          {/* Supported Platforms */}
-          <div className="rounded-lg border border-border p-6">
-            <h3 className="mb-4 text-center text-sm font-medium text-muted-foreground">
-              Supported platforms
-            </h3>
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              {platforms.map((p) => (
-                <div
-                  key={p.id}
-                  className="flex items-center gap-2 rounded-md border border-border px-3 py-1.5"
-                >
-                  <img
-                    src={p.icon}
-                    alt=""
-                    className="h-3.5 w-3.5"
-                    style={{ filter: 'brightness(0) invert(1)' }}
-                  />
-                  <span className="font-mono text-xs text-muted-foreground">
-                    {p.name}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      <GridLine />
 
-      {/* Use Cases Section */}
-      <section className="mt-20">
-        <div className="mb-8 text-center">
-          <h2 className="mb-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-            What will you build with it?
-          </h2>
-          <p className="mx-auto max-w-md text-sm text-muted-foreground">
-            A single prompt link turns any surface into an AI entry point.
-            Here are some ideas.
-          </p>
-        </div>
+      {/* ── Use Cases heading ── */}
+      <div className="mx-auto max-w-4xl px-4 pt-14 pb-6 text-center">
+        <h2 className="mb-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+          What will you build with it?
+        </h2>
+        <p className="mx-auto max-w-md text-sm text-muted-foreground">
+          A single prompt link turns any surface into an AI entry point.
+        </p>
+      </div>
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {/* ── Use Cases grid ── */}
+      <section className="mx-auto max-w-4xl py-10 pb-0">
+        <div className="relative grid grid-cols-1 sm:grid-cols-2">
+          {/* Vertical divider (center) */}
+          <div
+            aria-hidden
+            className="absolute inset-y-0 left-1/2 hidden w-px -translate-x-1/2 bg-border/50 sm:block"
+          />
+          {/* Horizontal divider (center) */}
+          <div
+            aria-hidden
+            className="absolute inset-x-0 top-1/2 hidden h-px -translate-y-1/2 bg-border/50 sm:block"
+          />
+          {/* Center "+" */}
+          <span
+            aria-hidden
+            className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50 sm:block"
+          >
+            +
+          </span>
+          {/* Top center "+" */}
+          <span
+            aria-hidden
+            className="absolute left-1/2 top-0 hidden -translate-x-1/2 -translate-y-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50 sm:block"
+          >
+            +
+          </span>
+          {/* Bottom center "+" */}
+          <span
+            aria-hidden
+            className="absolute left-1/2 bottom-0 hidden -translate-x-1/2 translate-y-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50 sm:block"
+          >
+            +
+          </span>
+          {/* Left center "+" */}
+          <span
+            aria-hidden
+            className="absolute left-0 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50 sm:block"
+          >
+            +
+          </span>
+          {/* Right center "+" */}
+          <span
+            aria-hidden
+            className="absolute right-0 top-1/2 hidden translate-x-1/2 -translate-y-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50 sm:block"
+          >
+            +
+          </span>
+
           {useCases.map((uc) => (
-            <div
-              key={uc.title}
-              className="rounded-lg border border-border bg-card p-5"
-            >
+            <div key={uc.title} className="p-6">
               <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-md border border-border bg-secondary">
                 <uc.icon className="h-4 w-4 text-muted-foreground" />
               </div>
@@ -291,16 +334,11 @@ export function Home() {
               <p className="text-xs leading-relaxed text-muted-foreground">
                 {uc.description}
               </p>
-              {uc.example && (
-                <code className="mt-3 block truncate rounded border border-border bg-secondary px-2 py-1 font-mono text-[10px] text-muted-foreground/70">
-                  {uc.example}
-                </code>
-              )}
             </div>
           ))}
         </div>
       </section>
-    </div>
+    </>
   )
 }
 
@@ -309,56 +347,24 @@ const useCases = [
     icon: User,
     title: '"Chat with me" portfolio button',
     description:
-      'Add a button to your personal site that opens AI pre-loaded with your bio, skills, and projects. Visitors can ask questions about you in their preferred AI.',
-    example: 'You are a helpful assistant for Jane, a full-stack developer...',
+      'Add a button to your personal site that opens AI pre-loaded with your bio, skills, and projects. Visitors ask about you in their preferred AI.',
   },
   {
     icon: BookOpen,
     title: 'Docs "Ask AI" button',
     description:
-      'Embed a link in your documentation that feeds the current page context to an AI. Users get instant help without leaving your docs.',
-    example: 'Here is the API reference for /users endpoint. Help me...',
+      'Embed a link in your documentation that feeds page context to an AI. Users get instant help without leaving your docs.',
   },
   {
     icon: MessageSquare,
     title: 'Product support chat',
     description:
-      'Create a pre-prompted link that gives AI context about your product, pricing, and FAQs. Drop it on your landing page as a "Chat with AI about us" button.',
-    example: 'You are a support agent for Acme SaaS. Here are the FAQs...',
-  },
-  {
-    icon: GraduationCap,
-    title: 'Interactive course materials',
-    description:
-      'Teachers and course creators can share prompt links that set up AI as a tutor for a specific topic, chapter, or assignment.',
-    example: 'You are a tutor helping students understand binary trees...',
+      'Pre-prompt an AI with your product info, pricing, and FAQs. Drop the link on your landing page as a support entry point.',
   },
   {
     icon: Bug,
-    title: 'Bug report helper',
+    title: 'Bug report assistant',
     description:
-      'Include a link in your GitHub issue template that pre-fills AI with your project setup, common errors, and debugging steps.',
-    example: 'Help me debug this issue in a Next.js 14 app using Prisma...',
-  },
-  {
-    icon: Megaphone,
-    title: 'Social media sharing',
-    description:
-      'Share a prompt on Twitter, Reddit, or Discord. Your followers pick their favorite AI and get the exact same starting prompt.',
-    example: 'Compare Rust vs Go for building a CLI tool, covering...',
-  },
-  {
-    icon: FileCode,
-    title: 'Code review prompts',
-    description:
-      'Paste a code snippet into a prompt link and share it with your team. Everyone can run the same review prompt in their AI of choice.',
-    example: 'Review this React component for performance issues...',
-  },
-  {
-    icon: Briefcase,
-    title: 'AI-powered job applications',
-    description:
-      'Recruiters can share a prompt link that pre-loads a job description. Candidates open it to get interview prep, salary insights, or cover letter drafts.',
-    example: 'Here is a Senior Engineer role at Acme. Help me prepare...',
+      'Include a prompt link in your GitHub issue template. Contributors get AI pre-loaded with your stack, common errors, and debug steps.',
   },
 ]
