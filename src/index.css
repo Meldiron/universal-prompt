@@ -169,21 +169,6 @@ button {
   cursor: pointer;
 }
 
-/* Adapt SVG icons to current theme */
-.icon-adaptive {
-  filter: brightness(0) invert(1);
-}
-
-.light .icon-adaptive {
-  filter: brightness(0);
-}
-
-@media (prefers-color-scheme: light) {
-  .auto .icon-adaptive {
-    filter: brightness(0);
-  }
-}
-
 @keyframes scale-bounce {
   0% {
     scale: 1;

@@ -186,7 +186,7 @@ export function Home() {
               )}
               style={{ animationDelay: `${i * 75}ms` }}
             >
-              <img src={p.icon} alt="" className="icon-adaptive h-3.5 w-3.5" />
+              <p.icon className="h-3.5 w-3.5" />
               <span className="font-mono text-xs text-muted-foreground">{p.name}</span>
             </div>
           ))}

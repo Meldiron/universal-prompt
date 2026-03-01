@@ -1,8 +1,23 @@
+import type { ComponentType } from 'react'
+
+import OpenAI from '@lobehub/icons/es/OpenAI'
+import Claude from '@lobehub/icons/es/Claude'
+import Gemini from '@lobehub/icons/es/Gemini'
+import Perplexity from '@lobehub/icons/es/Perplexity'
+import Grok from '@lobehub/icons/es/Grok'
+import Copilot from '@lobehub/icons/es/Copilot'
+import DeepSeek from '@lobehub/icons/es/DeepSeek'
+import Mistral from '@lobehub/icons/es/Mistral'
+import HuggingFace from '@lobehub/icons/es/HuggingFace'
+import Meta from '@lobehub/icons/es/Meta'
+import Phind from '@lobehub/icons/es/Phind'
+import { YouIcon, T3ChatIcon, RaycastIcon } from './custom-icons'
+
 export interface AIPlatform {
   id: string
   name: string
   url: (prompt: string) => string
-  icon: string
+  icon: ComponentType<{ size?: number | string; className?: string }>
   color: string
   description: string
   type: 'web' | 'desktop' | 'search'
@@ -13,7 +28,7 @@ export const platforms: AIPlatform[] = [
     id: 'chatgpt',
     name: 'ChatGPT',
     url: (prompt) => `https://chatgpt.com/?q=${encodeURIComponent(prompt)}`,
-    icon: '/icons/chatgpt.svg',
+    icon: OpenAI,
     color: '#10a37f',
     description: 'OpenAI',
     type: 'web',
@@ -22,7 +37,7 @@ export const platforms: AIPlatform[] = [
     id: 'claude',
     name: 'Claude',
     url: (prompt) => `https://claude.ai/new?q=${encodeURIComponent(prompt)}`,
-    icon: '/icons/claude.svg',
+    icon: Claude,
     color: '#d97757',
     description: 'Anthropic',
     type: 'web',
@@ -31,7 +46,7 @@ export const platforms: AIPlatform[] = [
     id: 'gemini',
     name: 'Gemini',
     url: (prompt) => `https://gemini.google.com/app?q=${encodeURIComponent(prompt)}`,
-    icon: '/icons/gemini.svg',
+    icon: Gemini,
     color: '#4285f4',
     description: 'Google',
     type: 'web',
@@ -40,7 +55,7 @@ export const platforms: AIPlatform[] = [
     id: 'perplexity',
     name: 'Perplexity',
     url: (prompt) => `https://www.perplexity.ai/search?q=${encodeURIComponent(prompt)}`,
-    icon: '/icons/perplexity.svg',
+    icon: Perplexity,
     color: '#20808d',
     description: 'Perplexity AI',
     type: 'search',
@@ -49,7 +64,7 @@ export const platforms: AIPlatform[] = [
     id: 'grok',
     name: 'Grok',
     url: (prompt) => `https://grok.com/?q=${encodeURIComponent(prompt)}`,
-    icon: '/icons/grok.svg',
+    icon: Grok,
     color: '#ffffff',
     description: 'xAI',
     type: 'web',
@@ -58,7 +73,7 @@ export const platforms: AIPlatform[] = [
     id: 'copilot',
     name: 'Copilot',
     url: (prompt) => `https://copilot.microsoft.com/?q=${encodeURIComponent(prompt)}`,
-    icon: '/icons/copilot.svg',
+    icon: Copilot,
     color: '#26c6da',
     description: 'Microsoft',
     type: 'web',
@@ -67,7 +82,7 @@ export const platforms: AIPlatform[] = [
     id: 'deepseek',
     name: 'DeepSeek',
     url: (prompt) => `https://chat.deepseek.com/?q=${encodeURIComponent(prompt)}`,
-    icon: '/icons/deepseek.svg',
+    icon: DeepSeek,
     color: '#4d6bfe',
     description: 'DeepSeek',
     type: 'web',
@@ -76,7 +91,7 @@ export const platforms: AIPlatform[] = [
     id: 'lechat',
     name: 'Le Chat',
     url: (prompt) => `https://chat.mistral.ai/chat?q=${encodeURIComponent(prompt)}`,
-    icon: '/icons/mistral.svg',
+    icon: Mistral,
     color: '#ff7000',
     description: 'Mistral',
     type: 'web',
@@ -85,7 +100,7 @@ export const platforms: AIPlatform[] = [
     id: 'huggingchat',
     name: 'HuggingChat',
     url: (prompt) => `https://huggingface.co/chat/?q=${encodeURIComponent(prompt)}`,
-    icon: '/icons/huggingface.svg',
+    icon: HuggingFace,
     color: '#ffd21e',
     description: 'Hugging Face',
     type: 'web',
@@ -94,7 +109,7 @@ export const platforms: AIPlatform[] = [
     id: 'you',
     name: 'You.com',
     url: (prompt) => `https://you.com/search?q=${encodeURIComponent(prompt)}`,
-    icon: '/icons/you.svg',
+    icon: YouIcon,
     color: '#8b5cf6',
     description: 'You.com',
     type: 'search',
@@ -103,7 +118,7 @@ export const platforms: AIPlatform[] = [
     id: 'phind',
     name: 'Phind',
     url: (prompt) => `https://www.phind.com/search?q=${encodeURIComponent(prompt)}`,
-    icon: '/icons/phind.svg',
+    icon: Phind,
     color: '#64ffda',
     description: 'Phind',
     type: 'search',
@@ -112,7 +127,7 @@ export const platforms: AIPlatform[] = [
     id: 't3chat',
     name: 'T3 Chat',
     url: (prompt) => `https://t3.chat/new?q=${encodeURIComponent(prompt)}`,
-    icon: '/icons/t3chat.svg',
+    icon: T3ChatIcon,
     color: '#e879f9',
     description: 'T3 Chat',
     type: 'web',
@@ -121,7 +136,7 @@ export const platforms: AIPlatform[] = [
     id: 'meta',
     name: 'Meta AI',
     url: (prompt) => `https://www.meta.ai/?q=${encodeURIComponent(prompt)}`,
-    icon: '/icons/meta.svg',
+    icon: Meta,
     color: '#0668E1',
     description: 'Meta',
     type: 'web',
@@ -131,7 +146,7 @@ export const platforms: AIPlatform[] = [
     name: 'Raycast',
     url: (prompt) =>
       `raycast://extensions/raycast/raycast-ai/ai-chat?fallbackText=${encodeURIComponent(prompt)}`,
-    icon: '/icons/raycast.svg',
+    icon: RaycastIcon,
     color: '#ff6363',
     description: 'Desktop App',
     type: 'desktop',

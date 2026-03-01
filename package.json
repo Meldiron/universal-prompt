@@ -13,6 +13,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@lobehub/icons": "^4.11.0",
     "@tailwindcss/vite": "^4.2.1",
     "appwrite": "^22.4.1",
     "class-variance-authority": "^0.7.1",

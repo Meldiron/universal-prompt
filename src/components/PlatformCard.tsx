@@ -49,7 +49,7 @@ export function PlatformCard({
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-border"
           style={{ backgroundColor: `${platform.color}10` }}
         >
-          <img src={platform.icon} alt="" className="icon-adaptive h-5 w-5" />
+          <platform.icon className="h-5 w-5" />
         </div>
 
         <div className="min-w-0 flex-1">

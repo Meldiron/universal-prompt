@@ -147,7 +147,7 @@ export function Redirect() {
                 className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md"
                 style={{ backgroundColor: `${platform.color}15` }}
               >
-                <img src={platform.icon} alt={platform.name} className="icon-adaptive h-5 w-5" />
+                <platform.icon className="h-5 w-5" />
               </div>
               <div className="min-w-0 flex-1">
                 <span className="font-medium text-foreground">{platform.name}</span>
