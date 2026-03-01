@@ -6,7 +6,7 @@ const client = new Client()
 
 const tables = new TablesDB(client)
 
-const DATABASE_ID = 'main';
+const DATABASE_ID = 'main'
 const TABLE_ID_SHORTLINKS = 'short-links'
 const TABLE_ID_REQUESTS = 'platform-requests'
 
@@ -35,9 +35,9 @@ export async function submitPlatformRequest(name: string, url: string): Promise<
 
 export async function getPromptByShortId(shortId: string): Promise<string | null> {
   try {
-    const response = await tables.getRow(DATABASE_ID, TABLE_ID_SHORTLINKS, shortId);
-    
-    return response.prompt as string;
+    const response = await tables.getRow(DATABASE_ID, TABLE_ID_SHORTLINKS, shortId)
+
+    return response.prompt as string
     return null
   } catch {
     return null

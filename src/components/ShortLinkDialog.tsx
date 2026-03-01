@@ -80,8 +80,7 @@ export function ShortLinkDialog({ url, prompt, onClose, onUrlChange }: ShortLink
         <DialogHeader>
           <DialogTitle>Short link created</DialogTitle>
           <DialogDescription>
-            Share this link with anyone to let them open the prompt in their
-            preferred AI.
+            Share this link with anyone to let them open the prompt in their preferred AI.
           </DialogDescription>
         </DialogHeader>
 
@@ -127,38 +126,34 @@ export function ShortLinkDialog({ url, prompt, onClose, onUrlChange }: ShortLink
                     onClick={handleSaveCustomSlug}
                     disabled={!customSlug.trim() || isSaving}
                   >
-                    {isSaving ? (
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                    ) : (
-                      'Save'
-                    )}
+                    {isSaving ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Save'}
                   </Button>
                 </div>
               </div>
               {slugError && (
-                <p className="animate-in fade-in slide-in-from-left-2 duration-200 text-xs text-destructive">{slugError}</p>
+                <p className="animate-in fade-in slide-in-from-left-2 duration-200 text-xs text-destructive">
+                  {slugError}
+                </p>
               )}
             </div>
           ) : (
             <>
-            <div className="flex min-w-0 items-center gap-2">
-              <div className="min-w-0 flex-1 overflow-hidden rounded-md border border-border bg-secondary px-3 py-2">
-                <p className="truncate font-mono text-sm text-foreground">
-                  {url}
-                </p>
+              <div className="flex min-w-0 items-center gap-2">
+                <div className="min-w-0 flex-1 overflow-hidden rounded-md border border-border bg-secondary px-3 py-2">
+                  <p className="truncate font-mono text-sm text-foreground">{url}</p>
+                </div>
               </div>
-            </div>
-            <button
-              onClick={() => {
-                const currentSlug = url ? url.split('/s/')[1] || '' : ''
-                setCustomSlug(currentSlug)
-                setIsEditing(true)
-              }}
-              className="-mt-3 flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-border py-2 text-xs text-muted-foreground transition-colors hover:border-muted-foreground/40 hover:text-foreground"
-            >
-              <Pencil className="h-3 w-3" />
-              Customize URL
-            </button>
+              <button
+                onClick={() => {
+                  const currentSlug = url ? url.split('/s/')[1] || '' : ''
+                  setCustomSlug(currentSlug)
+                  setIsEditing(true)
+                }}
+                className="-mt-3 flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-border py-2 text-xs text-muted-foreground transition-colors hover:border-muted-foreground/40 hover:text-foreground"
+              >
+                <Pencil className="h-3 w-3" />
+                Customize URL
+              </button>
             </>
           )}
 
@@ -166,11 +161,7 @@ export function ShortLinkDialog({ url, prompt, onClose, onUrlChange }: ShortLink
           <div className="flex flex-col items-center gap-4 rounded-lg border border-border bg-secondary/50 p-4 sm:flex-row">
             <div className="flex shrink-0 items-center justify-center">
               <div className="rounded-lg bg-white p-2.5">
-                <QRCodeSVG
-                  value={url || ''}
-                  size={120}
-                  level="M"
-                />
+                <QRCodeSVG value={url || ''} size={120} level="M" />
               </div>
             </div>
             <div className="flex flex-col items-center gap-3 text-center sm:items-start sm:text-left">
@@ -178,9 +169,7 @@ export function ShortLinkDialog({ url, prompt, onClose, onUrlChange }: ShortLink
                 <Smartphone className="h-5 w-5 text-muted-foreground" />
               </div>
               <div>
-                <p className="text-sm font-medium text-foreground">
-                  Scan with phone
-                </p>
+                <p className="text-sm font-medium text-foreground">Scan with phone</p>
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   Point your camera to open on mobile
                 </p>

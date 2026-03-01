@@ -129,7 +129,8 @@ export const platforms: AIPlatform[] = [
   {
     id: 'raycast',
     name: 'Raycast',
-    url: (prompt) => `raycast://extensions/raycast/raycast-ai/ai-chat?fallbackText=${encodeURIComponent(prompt)}`,
+    url: (prompt) =>
+      `raycast://extensions/raycast/raycast-ai/ai-chat?fallbackText=${encodeURIComponent(prompt)}`,
     icon: '/icons/raycast.svg',
     color: '#ff6363',
     description: 'Desktop App',

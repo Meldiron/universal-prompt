@@ -76,9 +76,7 @@ export function Redirect() {
             : 'opacity-0',
         )}
       >
-        <h1 className="mb-3 text-2xl font-bold tracking-tight text-foreground">
-          Choose your AI
-        </h1>
+        <h1 className="mb-3 text-2xl font-bold tracking-tight text-foreground">Choose your AI</h1>
         <p className="text-sm text-muted-foreground">
           Someone shared a prompt with you. Pick a platform to open it in.
         </p>
@@ -149,11 +147,7 @@ export function Redirect() {
                 className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md"
                 style={{ backgroundColor: `${platform.color}15` }}
               >
-                <img
-                  src={platform.icon}
-                  alt={platform.name}
-                  className="icon-adaptive h-5 w-5"
-                />
+                <img src={platform.icon} alt={platform.name} className="icon-adaptive h-5 w-5" />
               </div>
               <div className="min-w-0 flex-1">
                 <span className="font-medium text-foreground">{platform.name}</span>
@@ -167,9 +161,7 @@ export function Redirect() {
       <div
         className={cn(
           'mt-2',
-          grid.isInView
-            ? 'animate-in fade-in duration-500 fill-mode-both'
-            : 'opacity-0',
+          grid.isInView ? 'animate-in fade-in duration-500 fill-mode-both' : 'opacity-0',
         )}
         style={{ animationDelay: `${platforms.length * 50}ms` }}
       >

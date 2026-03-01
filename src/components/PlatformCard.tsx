@@ -49,11 +49,7 @@ export function PlatformCard({
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-border"
           style={{ backgroundColor: `${platform.color}10` }}
         >
-          <img
-            src={platform.icon}
-            alt=""
-            className="icon-adaptive h-5 w-5"
-          />
+          <img src={platform.icon} alt="" className="icon-adaptive h-5 w-5" />
         </div>
 
         <div className="min-w-0 flex-1">
@@ -70,9 +66,7 @@ export function PlatformCard({
               </span>
             )}
           </div>
-          <p className="truncate font-mono text-xs text-muted-foreground">
-            {platform.description}
-          </p>
+          <p className="truncate font-mono text-xs text-muted-foreground">{platform.description}</p>
         </div>
 
         <button
@@ -93,9 +87,7 @@ export function PlatformCard({
       {/* URL row */}
       <div className="mt-3 flex min-w-0 items-center gap-1.5">
         <div className="min-w-0 flex-1 overflow-hidden rounded-md border border-border bg-secondary px-3 py-1.5">
-          <p className="truncate font-mono text-[11px] text-muted-foreground/70">
-            {url}
-          </p>
+          <p className="truncate font-mono text-[11px] text-muted-foreground/70">{url}</p>
         </div>
         <Button
           variant="ghost"

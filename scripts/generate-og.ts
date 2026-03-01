@@ -1,6 +1,6 @@
 import satori from 'satori'
 import { Resvg } from '@resvg/resvg-js'
-import { readFileSync, writeFileSync } from 'fs'
+import { writeFileSync } from 'fs'
 import { join } from 'path'
 
 const WIDTH = 1200

@@ -127,10 +127,7 @@ export function Home() {
   return (
     <>
       {/* ── Hero ── */}
-      <div
-        ref={hero.ref}
-        className="mx-auto max-w-4xl px-4 pt-16 pb-10 text-center"
-      >
+      <div ref={hero.ref} className="mx-auto max-w-4xl px-4 pt-16 pb-10 text-center">
         <a
           href="https://github.com/meldiron/universal-prompt"
           target="_blank"
@@ -170,8 +167,8 @@ export function Home() {
           )}
           style={{ animationDelay: '300ms' }}
         >
-          Write your prompt once. Get instant deep links to open it in ChatGPT,
-          Claude, Gemini, and {platforms.length - 3}+ other platforms.
+          Write your prompt once. Get instant deep links to open it in ChatGPT, Claude, Gemini, and{' '}
+          {platforms.length - 3}+ other platforms.
         </p>
       </div>
 
@@ -189,14 +186,8 @@ export function Home() {
               )}
               style={{ animationDelay: `${i * 50}ms` }}
             >
-              <img
-                src={p.icon}
-                alt=""
-                className="icon-adaptive h-3.5 w-3.5"
-              />
-              <span className="font-mono text-xs text-muted-foreground">
-                {p.name}
-              </span>
+              <img src={p.icon} alt="" className="icon-adaptive h-3.5 w-3.5" />
+              <span className="font-mono text-xs text-muted-foreground">{p.name}</span>
             </div>
           ))}
           <div
@@ -225,9 +216,7 @@ export function Home() {
         )}
       >
         <div className="mb-4 text-center">
-          <h2 className="mb-1 text-lg font-bold tracking-tight text-foreground">
-            Your prompt
-          </h2>
+          <h2 className="mb-1 text-lg font-bold tracking-tight text-foreground">Your prompt</h2>
           <p className="text-sm text-muted-foreground">
             Write or paste the prompt you want to share across AI platforms.
           </p>
@@ -252,25 +241,25 @@ export function Home() {
                 <RollingNumber value={prompt.trim().length} /> chars
               </span>
               <span className="font-mono text-[11px] text-muted-foreground/50">
-                <RollingNumber value={prompt.trim() ? prompt.trim().split(/\s+/).length : 0} /> words
+                <RollingNumber value={prompt.trim() ? prompt.trim().split(/\s+/).length : 0} />{' '}
+                words
               </span>
               <div className="flex-1" />
 
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleGenerateShortLink}
-                  disabled={!hasPrompt || isGenerating}
-                  className="h-7 gap-1.5 text-xs"
-                >
-                  {isGenerating ? (
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                  ) : (
-                    <Link className="h-3 w-3" />
-                  )}
-                  Short Link
-                </Button>
-
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleGenerateShortLink}
+                disabled={!hasPrompt || isGenerating}
+                className="h-7 gap-1.5 text-xs"
+              >
+                {isGenerating ? (
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                ) : (
+                  <Link className="h-3 w-3" />
+                )}
+                Short Link
+              </Button>
             </div>
           </div>
 
@@ -360,9 +349,7 @@ export function Home() {
                     <example.icon className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-foreground">
-                      {example.label}
-                    </p>
+                    <p className="text-sm font-medium text-foreground">{example.label}</p>
                     <p className="truncate font-mono text-xs text-muted-foreground/60">
                       {example.prompt}
                     </p>
@@ -404,17 +391,37 @@ export function Home() {
             className="absolute inset-y-0 left-1/2 hidden w-px -translate-x-1/2 bg-border/50 sm:block"
           />
           {/* Left rail */}
-          <div aria-hidden className="absolute inset-y-0 left-0 hidden w-px bg-border/50 lg:block" />
+          <div
+            aria-hidden
+            className="absolute inset-y-0 left-0 hidden w-px bg-border/50 lg:block"
+          />
           {/* Right rail */}
-          <div aria-hidden className="absolute inset-y-0 right-0 hidden w-px bg-border/50 lg:block" />
+          <div
+            aria-hidden
+            className="absolute inset-y-0 right-0 hidden w-px bg-border/50 lg:block"
+          />
 
           {/* Top full-bleed line */}
-          <div aria-hidden className="relative hidden lg:block" style={{ marginLeft: 'calc(-50vw + 50%)', marginRight: 'calc(-50vw + 50%)', width: '100vw' }}>
+          <div
+            aria-hidden
+            className="relative hidden lg:block"
+            style={{
+              marginLeft: 'calc(-50vw + 50%)',
+              marginRight: 'calc(-50vw + 50%)',
+              width: '100vw',
+            }}
+          >
             <div className="h-px w-full bg-border/50" />
             <div className="pointer-events-none relative mx-auto max-w-4xl">
-              <span className="absolute -top-[7px] left-0 -translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
-              <span className="absolute -top-[7px] left-1/2 -translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
-              <span className="absolute -top-[7px] right-0 translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
+              <span className="absolute -top-[7px] left-0 -translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">
+                +
+              </span>
+              <span className="absolute -top-[7px] left-1/2 -translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">
+                +
+              </span>
+              <span className="absolute -top-[7px] right-0 translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">
+                +
+              </span>
             </div>
           </div>
 
@@ -434,23 +441,33 @@ export function Home() {
                 <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-md border border-border bg-secondary">
                   <uc.icon className="h-4 w-4 text-muted-foreground" />
                 </div>
-                <h3 className="mb-1 text-sm font-semibold text-foreground">
-                  {uc.title}
-                </h3>
-                <p className="text-xs leading-relaxed text-muted-foreground">
-                  {uc.description}
-                </p>
+                <h3 className="mb-1 text-sm font-semibold text-foreground">{uc.title}</h3>
+                <p className="text-xs leading-relaxed text-muted-foreground">{uc.description}</p>
               </div>
             ))}
           </div>
 
           {/* Middle full-bleed line */}
-          <div aria-hidden className="relative hidden lg:block" style={{ marginLeft: 'calc(-50vw + 50%)', marginRight: 'calc(-50vw + 50%)', width: '100vw' }}>
+          <div
+            aria-hidden
+            className="relative hidden lg:block"
+            style={{
+              marginLeft: 'calc(-50vw + 50%)',
+              marginRight: 'calc(-50vw + 50%)',
+              width: '100vw',
+            }}
+          >
             <div className="h-px w-full bg-border/50" />
             <div className="pointer-events-none relative mx-auto max-w-4xl">
-              <span className="absolute -top-[7px] left-0 -translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
-              <span className="absolute -top-[7px] left-1/2 -translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
-              <span className="absolute -top-[7px] right-0 translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
+              <span className="absolute -top-[7px] left-0 -translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">
+                +
+              </span>
+              <span className="absolute -top-[7px] left-1/2 -translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">
+                +
+              </span>
+              <span className="absolute -top-[7px] right-0 translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">
+                +
+              </span>
             </div>
           </div>
 
@@ -470,23 +487,33 @@ export function Home() {
                 <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-md border border-border bg-secondary">
                   <uc.icon className="h-4 w-4 text-muted-foreground" />
                 </div>
-                <h3 className="mb-1 text-sm font-semibold text-foreground">
-                  {uc.title}
-                </h3>
-                <p className="text-xs leading-relaxed text-muted-foreground">
-                  {uc.description}
-                </p>
+                <h3 className="mb-1 text-sm font-semibold text-foreground">{uc.title}</h3>
+                <p className="text-xs leading-relaxed text-muted-foreground">{uc.description}</p>
               </div>
             ))}
           </div>
 
           {/* Bottom full-bleed line */}
-          <div aria-hidden className="relative hidden lg:block" style={{ marginLeft: 'calc(-50vw + 50%)', marginRight: 'calc(-50vw + 50%)', width: '100vw' }}>
+          <div
+            aria-hidden
+            className="relative hidden lg:block"
+            style={{
+              marginLeft: 'calc(-50vw + 50%)',
+              marginRight: 'calc(-50vw + 50%)',
+              width: '100vw',
+            }}
+          >
             <div className="h-px w-full bg-border/50" />
             <div className="pointer-events-none relative mx-auto max-w-4xl">
-              <span className="absolute -top-[7px] left-0 -translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
-              <span className="absolute -top-[7px] left-1/2 -translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
-              <span className="absolute -top-[7px] right-0 translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
+              <span className="absolute -top-[7px] left-0 -translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">
+                +
+              </span>
+              <span className="absolute -top-[7px] left-1/2 -translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">
+                +
+              </span>
+              <span className="absolute -top-[7px] right-0 translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">
+                +
+              </span>
             </div>
           </div>
         </div>
@@ -515,9 +542,15 @@ export function Home() {
       <section ref={faqItems.ref} className="mx-auto max-w-4xl pb-4">
         <div className="relative">
           {/* Left rail */}
-          <div aria-hidden className="absolute inset-y-0 left-0 hidden w-px bg-border/50 lg:block" />
+          <div
+            aria-hidden
+            className="absolute inset-y-0 left-0 hidden w-px bg-border/50 lg:block"
+          />
           {/* Right rail */}
-          <div aria-hidden className="absolute inset-y-0 right-0 hidden w-px bg-border/50 lg:block" />
+          <div
+            aria-hidden
+            className="absolute inset-y-0 right-0 hidden w-px bg-border/50 lg:block"
+          />
 
           {faqs.map((faq, i) => (
             <div
@@ -530,30 +563,50 @@ export function Home() {
               style={{ animationDelay: `${i * 100}ms` }}
             >
               {/* Full-bleed horizontal line with pluses */}
-              <div aria-hidden className="relative hidden lg:block" style={{ marginLeft: 'calc(-50vw + 50%)', marginRight: 'calc(-50vw + 50%)', width: '100vw' }}>
+              <div
+                aria-hidden
+                className="relative hidden lg:block"
+                style={{
+                  marginLeft: 'calc(-50vw + 50%)',
+                  marginRight: 'calc(-50vw + 50%)',
+                  width: '100vw',
+                }}
+              >
                 <div className="h-px w-full bg-border/50" />
                 <div className="pointer-events-none relative mx-auto max-w-4xl">
-                  <span className="absolute -top-[7px] left-0 -translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
-                  <span className="absolute -top-[7px] right-0 translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
+                  <span className="absolute -top-[7px] left-0 -translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">
+                    +
+                  </span>
+                  <span className="absolute -top-[7px] right-0 translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">
+                    +
+                  </span>
                 </div>
               </div>
               <div className="px-6 py-5">
-                <h3 className="mb-1.5 text-sm font-medium text-foreground">
-                  {faq.question}
-                </h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  {faq.answer}
-                </p>
+                <h3 className="mb-1.5 text-sm font-medium text-foreground">{faq.question}</h3>
+                <p className="text-sm leading-relaxed text-muted-foreground">{faq.answer}</p>
               </div>
             </div>
           ))}
 
           {/* Bottom full-bleed line */}
-          <div aria-hidden className="relative hidden lg:block" style={{ marginLeft: 'calc(-50vw + 50%)', marginRight: 'calc(-50vw + 50%)', width: '100vw' }}>
+          <div
+            aria-hidden
+            className="relative hidden lg:block"
+            style={{
+              marginLeft: 'calc(-50vw + 50%)',
+              marginRight: 'calc(-50vw + 50%)',
+              width: '100vw',
+            }}
+          >
             <div className="h-px w-full bg-border/50" />
             <div className="pointer-events-none relative mx-auto max-w-4xl">
-              <span className="absolute -top-[7px] left-0 -translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
-              <span className="absolute -top-[7px] right-0 translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">+</span>
+              <span className="absolute -top-[7px] left-0 -translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">
+                +
+              </span>
+              <span className="absolute -top-[7px] right-0 translate-x-1/2 select-none font-mono text-xs leading-none text-muted-foreground/50">
+                +
+              </span>
             </div>
           </div>
         </div>
@@ -575,10 +628,7 @@ export function Home() {
         <p className="mx-auto mb-6 max-w-md text-sm text-muted-foreground">
           Write your prompt once and share it everywhere. No sign-up required.
         </p>
-        <Button
-          size="lg"
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        >
+        <Button size="lg" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           Get started
         </Button>
       </section>
@@ -603,7 +653,7 @@ const faqs = [
       'Only if you generate a short link. Short links are stored in an Appwrite database so they can be resolved later. If you just copy a direct platform link, nothing is stored.',
   },
   {
-    question: 'Can I add a platform that isn\'t listed?',
+    question: "Can I add a platform that isn't listed?",
     answer:
       'Yes! Use the "Request a platform" button that appears below the platform list. We review requests and add new platforms regularly.',
   },

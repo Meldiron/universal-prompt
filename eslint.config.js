@@ -19,5 +19,16 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+      // Our useInView callback-ref pattern triggers false positives
+      'react-hooks/refs': 'off',
+    },
+  },
+  {
+    files: ['src/components/ui/**/*.{ts,tsx}'],
+    rules: {
+      // shadcn/ui components export variants alongside components
+      'react-refresh/only-export-components': 'off',
+    },
   },
 ])

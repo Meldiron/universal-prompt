@@ -17,9 +17,7 @@ export function useFavorites() {
 
   const toggle = useCallback((id: string) => {
     setFavorites((prev) => {
-      const next = prev.includes(id)
-        ? prev.filter((f) => f !== id)
-        : [...prev, id]
+      const next = prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id]
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
       } catch {
@@ -29,10 +27,7 @@ export function useFavorites() {
     })
   }, [])
 
-  const isFavorite = useCallback(
-    (id: string) => favorites.includes(id),
-    [favorites],
-  )
+  const isFavorite = useCallback((id: string) => favorites.includes(id), [favorites])
 
   return { favorites, toggle, isFavorite } as const
 }

@@ -64,9 +64,7 @@ export function RequestPlatformDialog({ variant = 'default' }: RequestPlatformDi
           className="flex items-center gap-1.5 rounded-md border border-dashed border-border px-3 py-1.5 transition-colors hover:border-muted-foreground/40 hover:text-foreground"
         >
           <Plus className="h-3 w-3" />
-          <span className="font-mono text-xs text-muted-foreground">
-            Missing some?
-          </span>
+          <span className="font-mono text-xs text-muted-foreground">Missing some?</span>
         </button>
       ) : (
         <button
@@ -81,24 +79,18 @@ export function RequestPlatformDialog({ variant = 'default' }: RequestPlatformDi
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Request a platform</DialogTitle>
-          <DialogDescription>
-            Suggest an AI platform you'd like us to add.
-          </DialogDescription>
+          <DialogDescription>Suggest an AI platform you'd like us to add.</DialogDescription>
         </DialogHeader>
 
         {submitted ? (
           <div className="flex flex-col items-center gap-2 py-6 animate-in fade-in zoom-in-75 duration-300">
             <Check className="h-8 w-8 text-emerald-500 animate-scale-bounce" />
-            <p className="text-sm font-medium text-foreground">
-              Request submitted!
-            </p>
+            <p className="text-sm font-medium text-foreground">Request submitted!</p>
           </div>
         ) : (
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">
-                Platform name
-              </label>
+              <label className="text-sm font-medium text-foreground">Platform name</label>
               <Input
                 placeholder="e.g. Mistral Chat"
                 value={name}
@@ -106,28 +98,16 @@ export function RequestPlatformDialog({ variant = 'default' }: RequestPlatformDi
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">
-                URL
-              </label>
+              <label className="text-sm font-medium text-foreground">URL</label>
               <Input
                 placeholder="e.g. https://chat.mistral.ai"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
               />
             </div>
-            {error && (
-              <p className="text-xs text-destructive">{error}</p>
-            )}
-            <Button
-              className="w-full"
-              onClick={handleSubmit}
-              disabled={!canSubmit || isSubmitting}
-            >
-              {isSubmitting ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                'Submit request'
-              )}
+            {error && <p className="text-xs text-destructive">{error}</p>}
+            <Button className="w-full" onClick={handleSubmit} disabled={!canSubmit || isSubmitting}>
+              {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Submit request'}
             </Button>
           </div>
         )}
