@@ -63,3 +63,28 @@ export const RaycastIcon = forwardRef<SVGSVGElement, IconProps>(
   ),
 )
 RaycastIcon.displayName = 'RaycastIcon'
+
+// Universal Prompt logo
+export const UniversalPromptIcon = forwardRef<SVGSVGElement, IconProps>(
+  ({ size = '1em', className, ...props }, ref) => (
+    <svg
+      ref={ref}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 32 32"
+      fill="none"
+      width={size}
+      height={size}
+      className={className}
+      {...props}
+    >
+      <path
+        d="M8 11h16M8 16h12M8 21h8"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
+      <circle cx="24" cy="21" r="3" fill="currentColor" />
+    </svg>
+  ),
+)
+UniversalPromptIcon.displayName = 'UniversalPromptIcon'

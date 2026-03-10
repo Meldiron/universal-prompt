@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { Loader2, AlertCircle, Check, Copy, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { platforms } from '@/lib/ai-platforms'
@@ -10,12 +10,25 @@ import { cn } from '@/lib/utils'
 
 export function Redirect() {
   const { shortId } = useParams<{ shortId: string }>()
+  const [searchParams] = useSearchParams()
   const [prompt, setPrompt] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
   useEffect(() => {
-    if (!shortId) return
+    const queryPrompt = searchParams.get('prompt')
+
+    if (queryPrompt) {
+      setPrompt(queryPrompt)
+      setLoading(false)
+      return
+    }
+
+    if (!shortId) {
+      setError(true)
+      setLoading(false)
+      return
+    }
 
     getPromptByShortId(shortId)
       .then((result) => {
@@ -27,7 +40,7 @@ export function Redirect() {
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false))
-  }, [shortId])
+  }, [shortId, searchParams])
 
   const [copied, setCopied] = useState(false)
 

@@ -11,7 +11,7 @@ import Mistral from '@lobehub/icons/es/Mistral'
 import HuggingFace from '@lobehub/icons/es/HuggingFace'
 import Meta from '@lobehub/icons/es/Meta'
 import Phind from '@lobehub/icons/es/Phind'
-import { YouIcon, T3ChatIcon, RaycastIcon } from './custom-icons'
+import { YouIcon, T3ChatIcon, RaycastIcon, UniversalPromptIcon } from './custom-icons'
 
 export interface AIPlatform {
   id: string
@@ -24,6 +24,16 @@ export interface AIPlatform {
 }
 
 export const platforms: AIPlatform[] = [
+  {
+    id: 'universal-prompt',
+    name: 'Universal Prompt',
+    url: (prompt) =>
+      `https://universal-prompt.appwrite.network/s?prompt=${encodeURIComponent(prompt)}`,
+    icon: UniversalPromptIcon,
+    color: '#8b5cf6',
+    description: 'Let visitor pick platform',
+    type: 'web',
+  },
   {
     id: 'chatgpt',
     name: 'ChatGPT',

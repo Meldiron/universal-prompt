@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 
 const STORAGE_KEY = 'universal-prompt-favorites'
+const DEFAULT_FAVORITES = ['universal-prompt']
 
 function getStored(): string[] {
   try {
@@ -9,7 +10,7 @@ function getStored(): string[] {
   } catch {
     // ignore
   }
-  return []
+  return DEFAULT_FAVORITES
 }
 
 export function useFavorites() {
