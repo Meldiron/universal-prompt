@@ -11,6 +11,8 @@ import Mistral from '@lobehub/icons/es/Mistral'
 import HuggingFace from '@lobehub/icons/es/HuggingFace'
 import Meta from '@lobehub/icons/es/Meta'
 import Phind from '@lobehub/icons/es/Phind'
+import Codex from '@lobehub/icons/es/Codex'
+import Cursor from '@lobehub/icons/es/Cursor'
 import { YouIcon, T3ChatIcon, RaycastIcon, UniversalPromptIcon } from './custom-icons'
 
 export interface AIPlatform {
@@ -41,6 +43,24 @@ export const platforms: AIPlatform[] = [
     icon: OpenAI,
     color: '#10a37f',
     description: 'OpenAI',
+    type: 'web',
+  },
+  {
+    id: 'codex',
+    name: 'Codex',
+    url: (prompt) => `codex://new?prompt=${encodeURIComponent(prompt)}`,
+    icon: Codex,
+    color: '#10a37f',
+    description: 'OpenAI',
+    type: 'web',
+  },
+  {
+    id: 'cursor',
+    name: 'Cursor',
+    url: (prompt) => `https://cursor.com/link/prompt?text=${encodeURIComponent(prompt)}`,
+    icon: Cursor,
+    color: '#ffffff',
+    description: 'Cursor',
     type: 'web',
   },
   {
